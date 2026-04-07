@@ -1,7 +1,7 @@
 package asoc.api.entity;
 
 public enum Role {
-    VISITANTE,
-    USUARIO,
-    ADMINISTRADOR
+    ROLE_VISITANTE,
+    ROLE_USUARIO,
+    ROLE_ADMINISTRADOR
 }
