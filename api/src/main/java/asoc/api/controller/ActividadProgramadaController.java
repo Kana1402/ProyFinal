@@ -1,8 +1,7 @@
 package asoc.api.controller;
 
 import asoc.api.entity.ActividadProgramada;
-import asoc.api.repository.ActividadProgramadaRepository;
-
+import asoc.api.services.ActividadProgramadaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,27 +13,25 @@ import java.util.List;
 @RequestMapping("/api/actividades")
 public class ActividadProgramadaController {
 
-    private final ActividadProgramadaRepository actividadRepository;
+    private final ActividadProgramadaService actividadService;
 
-    public ActividadProgramadaController(ActividadProgramadaRepository actividadRepository) {
-        this.actividadRepository = actividadRepository;
+    public ActividadProgramadaController(ActividadProgramadaService actividadService) {
+        this.actividadService = actividadService;
     }
 
-    // Público: ver todas las actividades disponibles
     @GetMapping
     public List<ActividadProgramada> listarTodas() {
-        return actividadRepository.findAll();
+        return actividadService.listarTodas();
     }
 
-    // Público: ver actividades de un servicio específico
     @GetMapping("/servicio/{servicioId}")
     public List<ActividadProgramada> listarPorServicio(@PathVariable Long servicioId) {
-        return actividadRepository.findByServicioId(servicioId);
+        return actividadService.listarPorServicio(servicioId);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ActividadProgramada> obtenerPorId(@PathVariable Long id) {
-        return actividadRepository.findById(id)
+        return actividadService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -42,30 +39,25 @@ public class ActividadProgramadaController {
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ActividadProgramada> crear(@RequestBody ActividadProgramada actividad) {
-        // cupoDisponible arranca igual al cupoMaximo al crear
-        actividad.setCupoDisponible(actividad.getCupoMaximo());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(actividadRepository.save(actividad));
+                .body(actividadService.crear(actividad));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ActividadProgramada> actualizar(@PathVariable Long id,
                                                           @RequestBody ActividadProgramada datos) {
-        return actividadRepository.findById(id).map(a -> {
-            a.setFechaHora(datos.getFechaHora());
-            a.setCupoMaximo(datos.getCupoMaximo());
-            a.setCupoDisponible(datos.getCupoDisponible());
-            a.setEstado(datos.getEstado());
-            return ResponseEntity.ok(actividadRepository.save(a));
-        }).orElse(ResponseEntity.notFound().build());
+        return actividadService.actualizar(id, datos)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (!actividadRepository.existsById(id)) return ResponseEntity.notFound().build();
-        actividadRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        if (actividadService.eliminar(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

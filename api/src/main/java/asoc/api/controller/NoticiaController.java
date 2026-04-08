@@ -1,8 +1,7 @@
 package asoc.api.controller;
 
 import asoc.api.entity.Noticia;
-import asoc.api.repository.NoticiaRepository;
-
+import asoc.api.services.NoticiaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,21 +13,20 @@ import java.util.List;
 @RequestMapping("/api/noticias")
 public class NoticiaController {
 
-    private final NoticiaRepository noticiaRepository;
+    private final NoticiaService noticiaService;
 
-    public NoticiaController(NoticiaRepository noticiaRepository) {
-        this.noticiaRepository = noticiaRepository;
+    public NoticiaController(NoticiaService noticiaService) {
+        this.noticiaService = noticiaService;
     }
 
-    // Público: cualquier visitante puede leer noticias
     @GetMapping
     public List<Noticia> listarTodas() {
-        return noticiaRepository.findAll();
+        return noticiaService.listarTodas();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Noticia> obtenerPorId(@PathVariable Long id) {
-        return noticiaRepository.findById(id)
+        return noticiaService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -37,26 +35,23 @@ public class NoticiaController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Noticia> crear(@RequestBody Noticia noticia) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(noticiaRepository.save(noticia));
+                .body(noticiaService.crear(noticia));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Noticia> actualizar(@PathVariable Long id, @RequestBody Noticia datos) {
-        return noticiaRepository.findById(id).map(n -> {
-            n.setTitulo(datos.getTitulo());
-            n.setContenido(datos.getContenido());
-            n.setImagenUrl(datos.getImagenUrl());
-            n.setAutor(datos.getAutor());
-            return ResponseEntity.ok(noticiaRepository.save(n));
-        }).orElse(ResponseEntity.notFound().build());
+        return noticiaService.actualizar(id, datos)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (!noticiaRepository.existsById(id)) return ResponseEntity.notFound().build();
-        noticiaRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        if (noticiaService.eliminar(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

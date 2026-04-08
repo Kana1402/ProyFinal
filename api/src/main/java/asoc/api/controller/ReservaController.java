@@ -64,7 +64,7 @@ public class ReservaController {
     @PatchMapping("/{id}/estado")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<?> cambiarEstado(@PathVariable Long id,
-                                           @RequestParam EstadoReserva estado) {
+            @RequestParam EstadoReserva estado) {
         try {
             return ResponseEntity.ok(reservaService.cambiarEstado(id, estado));
         } catch (RuntimeException e) {
@@ -75,7 +75,8 @@ public class ReservaController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (!reservaRepository.existsById(id)) return ResponseEntity.notFound().build();
+        if (!reservaRepository.existsById(id))
+            return ResponseEntity.notFound().build();
         reservaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }

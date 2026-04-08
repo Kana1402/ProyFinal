@@ -3,7 +3,7 @@
 ### ==========================================================
 
 @base = http://localhost:8080
-@tokenAdmin = Bearer PEGA_AQUI_TOKEN_ADMIN
+@tokenAdmin = Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3NTYyNDc4OSwiZXhwIjoxNzc1NjI4Mzg5fQ.mUKm0daqKW4R6WIc-hGy9VQncS4nUdKujHL6KLEG4QA
 @tokenUsuario = Bearer PEGA_AQUI_TOKEN_USUARIO
 
 
@@ -318,5 +318,5 @@ Authorization: {{tokenAdmin}}
 ###
 
 ### Eliminar usuario (ADMIN)
-DELETE {{base}}/api/usuarios/2
+DELETE {{base}}/api/usuarios/4
 Authorization: {{tokenAdmin}}
