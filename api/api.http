@@ -1,0 +1,322 @@
+### ==========================================================
+### VARIABLES - Pega el token después de hacer login
+### ==========================================================
+
+@base = http://localhost:8080
+@tokenAdmin = Bearer PEGA_AQUI_TOKEN_ADMIN
+@tokenUsuario = Bearer PEGA_AQUI_TOKEN_USUARIO
+
+
+### ==========================================================
+### AUTH
+### ==========================================================
+
+### Login como ADMINISTRADOR
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+###
+
+### Login como USUARIO
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "usuario1",
+  "password": "user123"
+}
+
+###
+
+### Registro de nuevo usuario
+POST {{base}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "username": "visitante1",
+  "password": "pass123",
+  "correo": "visitante1@gmail.com",
+  "telefono": "88881234"
+}
+
+
+### ==========================================================
+### SERVICIOS (GET público / CRUD solo ADMIN)
+### ==========================================================
+
+### Listar todos los servicios (público)
+GET {{base}}/api/servicios
+
+###
+
+### Ver un servicio por ID (público)
+GET {{base}}/api/servicios/1
+
+###
+
+### Crear servicio (ADMIN)
+POST {{base}}/api/servicios
+Content-Type: application/json
+Authorization: {{tokenAdmin}}
+
+{
+  "titulo": "Tour en Lancha por el Parque Nacional Cahuita",
+  "descripcion": "Recorrido guiado por los arrecifes de coral del parque.",
+  "precio": 35000,
+  "imagenUrl": "https://ejemplo.com/imagen-tour.jpg"
+}
+
+###
+
+### Actualizar servicio (ADMIN)
+PUT {{base}}/api/servicios/1
+Content-Type: application/json
+Authorization: {{tokenAdmin}}
+
+{
+  "titulo": "Tour en Lancha - Edición Actualizada",
+  "descripcion": "Descripción actualizada del tour.",
+  "precio": 40000,
+  "imagenUrl": "https://ejemplo.com/nueva-imagen.jpg"
+}
+
+###
+
+### Eliminar servicio (ADMIN)
+DELETE {{base}}/api/servicios/1
+Authorization: {{tokenAdmin}}
+
+
+### ==========================================================
+### ACTIVIDADES PROGRAMADAS
+### ==========================================================
+
+### Listar todas las actividades (público)
+GET {{base}}/api/actividades
+
+###
+
+### Listar actividades de un servicio (público)
+GET {{base}}/api/actividades/servicio/1
+
+###
+
+### Crear actividad (ADMIN)
+POST {{base}}/api/actividades
+Content-Type: application/json
+Authorization: {{tokenAdmin}}
+
+{
+  "servicio": { "id": 1 },
+  "fechaHora": "2025-08-15T08:00:00",
+  "cupoMaximo": 10
+}
+
+###
+
+### Actualizar actividad (ADMIN)
+PUT {{base}}/api/actividades/1
+Content-Type: application/json
+Authorization: {{tokenAdmin}}
+
+{
+  "fechaHora": "2025-08-16T09:00:00",
+  "cupoMaximo": 12,
+  "cupoDisponible": 12,
+  "estado": "PROGRAMADA"
+}
+
+###
+
+### Eliminar actividad (ADMIN)
+DELETE {{base}}/api/actividades/1
+Authorization: {{tokenAdmin}}
+
+
+### ==========================================================
+### RESERVAS
+### ==========================================================
+
+### Crear reserva (USUARIO)
+POST {{base}}/api/reservas
+Content-Type: application/json
+Authorization: {{tokenUsuario}}
+
+{
+  "usuario": { "id": 2 },
+  "actividad": { "id": 1 },
+  "cantidadPersonas": 2,
+  "notas": "Somos dos adultos, llegamos desde San José."
+}
+
+###
+
+### Ver mis reservas (USUARIO)
+GET {{base}}/api/reservas/mis-reservas/2
+Authorization: {{tokenUsuario}}
+
+###
+
+### Ver todas las reservas (ADMIN)
+GET {{base}}/api/reservas
+Authorization: {{tokenAdmin}}
+
+###
+
+### Ver reservas de una actividad (ADMIN)
+GET {{base}}/api/reservas/actividad/1
+Authorization: {{tokenAdmin}}
+
+###
+
+### Confirmar reserva (ADMIN)
+PATCH {{base}}/api/reservas/1/estado?estado=CONFIRMADA
+Authorization: {{tokenAdmin}}
+
+###
+
+### Cancelar reserva - devuelve cupos (ADMIN)
+PATCH {{base}}/api/reservas/1/estado?estado=CANCELADA
+Authorization: {{tokenAdmin}}
+
+###
+
+### Eliminar reserva (ADMIN)
+DELETE {{base}}/api/reservas/1
+Authorization: {{tokenAdmin}}
+
+
+### ==========================================================
+### NOTICIAS (GET público / CRUD solo ADMIN)
+### ==========================================================
+
+### Listar noticias (público)
+GET {{base}}/api/noticias
+
+###
+
+### Ver noticia por ID (público)
+GET {{base}}/api/noticias/1
+
+###
+
+### Crear noticia (ADMIN)
+POST {{base}}/api/noticias
+Content-Type: application/json
+Authorization: {{tokenAdmin}}
+
+{
+  "titulo": "Apertura de temporada de snorkel 2025",
+  "contenido": "La asociación anuncia el inicio de la temporada alta con nuevos tours disponibles.",
+  "imagenUrl": "https://ejemplo.com/noticia1.jpg",
+  "autor": { "id": 1 }
+}
+
+###
+
+### Actualizar noticia (ADMIN)
+PUT {{base}}/api/noticias/1
+Content-Type: application/json
+Authorization: {{tokenAdmin}}
+
+{
+  "titulo": "Título actualizado",
+  "contenido": "Contenido actualizado de la noticia.",
+  "imagenUrl": "https://ejemplo.com/noticia-actualizada.jpg",
+  "autor": { "id": 1 }
+}
+
+###
+
+### Eliminar noticia (ADMIN)
+DELETE {{base}}/api/noticias/1
+Authorization: {{tokenAdmin}}
+
+
+### ==========================================================
+### DIRECTIVA (GET público / CRUD solo ADMIN)
+### ==========================================================
+
+### Listar miembros (público)
+GET {{base}}/api/directiva
+
+###
+
+### Ver miembro por ID (público)
+GET {{base}}/api/directiva/1
+
+###
+
+### Crear miembro (ADMIN)
+POST {{base}}/api/directiva
+Content-Type: application/json
+Authorization: {{tokenAdmin}}
+
+{
+  "nombre": "Carlos Hernández",
+  "puesto": "Presidente",
+  "biografia": "Pescador artesanal con más de 20 años de experiencia en la zona de Cahuita.",
+  "fotoUrl": "https://ejemplo.com/carlos.jpg",
+  "ordenPrioridad": 1
+}
+
+###
+
+### Actualizar miembro (ADMIN)
+PUT {{base}}/api/directiva/1
+Content-Type: application/json
+Authorization: {{tokenAdmin}}
+
+{
+  "nombre": "Carlos Hernández",
+  "puesto": "Vicepresidente",
+  "biografia": "Actualización de biografía.",
+  "fotoUrl": "https://ejemplo.com/carlos.jpg",
+  "ordenPrioridad": 2
+}
+
+###
+
+### Eliminar miembro (ADMIN)
+DELETE {{base}}/api/directiva/1
+Authorization: {{tokenAdmin}}
+
+
+### ==========================================================
+### USUARIOS (solo ADMIN)
+### ==========================================================
+
+### Listar todos los usuarios (ADMIN)
+GET {{base}}/api/usuarios
+Authorization: {{tokenAdmin}}
+
+###
+
+### Ver usuario por ID (ADMIN)
+GET {{base}}/api/usuarios/1
+Authorization: {{tokenAdmin}}
+
+###
+
+### Actualizar usuario (ADMIN)
+PUT {{base}}/api/usuarios/2
+Content-Type: application/json
+Authorization: {{tokenAdmin}}
+
+{
+  "username": "usuario1",
+  "correo": "nuevo@gmail.com",
+  "telefono": "87654321",
+  "role": "USUARIO"
+}
+
+###
+
+### Eliminar usuario (ADMIN)
+DELETE {{base}}/api/usuarios/2
+Authorization: {{tokenAdmin}}

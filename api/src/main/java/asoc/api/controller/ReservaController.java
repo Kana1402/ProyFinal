@@ -1,7 +1,9 @@
 package asoc.api.controller;
 
+import asoc.api.entity.EstadoReserva;
 import asoc.api.entity.Reserva;
 import asoc.api.repository.ReservaRepository;
+import asoc.api.services.ReservaService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,31 +16,30 @@ import java.util.List;
 @RequestMapping("/api/reservas")
 public class ReservaController {
 
+    private final ReservaService reservaService;
     private final ReservaRepository reservaRepository;
 
-    public ReservaController(ReservaRepository reservaRepository) {
+    public ReservaController(ReservaService reservaService, ReservaRepository reservaRepository) {
+        this.reservaService = reservaService;
         this.reservaRepository = reservaRepository;
     }
 
-    // ADMINISTRADOR: ver todas las reservas
     @GetMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<Reserva> listarTodas() {
-        return reservaRepository.findAll();
+        return reservaService.listarTodas();
     }
 
-    // USUARIO: ver su propio historial de reservas
     @GetMapping("/mis-reservas/{usuarioId}")
     @PreAuthorize("hasAnyRole('USUARIO', 'ADMINISTRADOR')")
     public List<Reserva> listarPorUsuario(@PathVariable Long usuarioId) {
-        return reservaRepository.findByUsuarioId(usuarioId);
+        return reservaService.listarPorUsuario(usuarioId);
     }
 
-    // ADMINISTRADOR: ver reservas de una actividad específica
     @GetMapping("/actividad/{actividadId}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<Reserva> listarPorActividad(@PathVariable Long actividadId) {
-        return reservaRepository.findByActividadId(actividadId);
+        return reservaService.listarPorActividad(actividadId);
     }
 
     @GetMapping("/{id}")
@@ -49,24 +50,26 @@ public class ReservaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // USUARIO: crear una reserva
     @PostMapping
     @PreAuthorize("hasAnyRole('USUARIO', 'ADMINISTRADOR')")
-    public ResponseEntity<Reserva> crear(@RequestBody Reserva reserva) {
-        // TODO: validar cupoDisponible en la actividad y descontarlo
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservaRepository.save(reserva));
+    public ResponseEntity<?> crear(@RequestBody Reserva reserva) {
+        try {
+            Reserva nueva = reservaService.crearReserva(reserva);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
-    // ADMINISTRADOR: cambiar estado de una reserva (confirmar, cancelar)
     @PatchMapping("/{id}/estado")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<Reserva> cambiarEstado(@PathVariable Long id,
-                                                  @RequestParam asoc.api.entity.EstadoReserva estado) {
-        return reservaRepository.findById(id).map(r -> {
-            r.setEstado(estado);
-            return ResponseEntity.ok(reservaRepository.save(r));
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> cambiarEstado(@PathVariable Long id,
+                                           @RequestParam EstadoReserva estado) {
+        try {
+            return ResponseEntity.ok(reservaService.cambiarEstado(id, estado));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
