@@ -1,21 +1,26 @@
 package asoc.api.controller;
 
 import asoc.api.entity.Usuario;
+import asoc.api.repository.UsuarioRepository;
 import asoc.api.services.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import asoc.api.entity.Role;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
+    private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
         this.usuarioService = usuarioService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @GetMapping
@@ -47,5 +52,14 @@ public class UsuarioController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/{id}/rol")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<?> cambiarRol(@PathVariable Long id, @RequestParam Role role) {
+        return usuarioRepository.findById(id).map(u -> {
+            u.setRole(role);
+            return ResponseEntity.ok(usuarioRepository.save(u));
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

@@ -18,7 +18,7 @@ public class ReservaService {
     private final ActividadProgramadaRepository actividadRepository;
 
     public ReservaService(ReservaRepository reservaRepository,
-                          ActividadProgramadaRepository actividadRepository) {
+            ActividadProgramadaRepository actividadRepository) {
         this.reservaRepository = reservaRepository;
         this.actividadRepository = actividadRepository;
     }
@@ -29,18 +29,24 @@ public class ReservaService {
                 .findById(reserva.getActividad().getId())
                 .orElseThrow(() -> new RuntimeException("Actividad no encontrada"));
 
+        // ── VALIDACIÓN NUEVA ──────────────────────────────────────
+        boolean yaReservo = reservaRepository.existsByUsuarioIdAndActividadIdAndEstadoNot(
+                reserva.getUsuario().getId(),
+                reserva.getActividad().getId(),
+                EstadoReserva.CANCELADA);
+        if (yaReservo) {
+            throw new RuntimeException("Ya tienes una reserva para esta actividad.");
+        }
+        // ──────────────────────────────────────────────────────────
+
         if (actividad.getCupoDisponible() < reserva.getCantidadPersonas()) {
             throw new RuntimeException("No hay suficientes cupos disponibles. Cupos restantes: "
                     + actividad.getCupoDisponible());
         }
 
-        // Descontar cupos
         actividad.setCupoDisponible(actividad.getCupoDisponible() - reserva.getCantidadPersonas());
         actividadRepository.save(actividad);
-
-        // Asignar estado inicial
         reserva.setEstado(EstadoReserva.PENDIENTE);
-
         return reservaRepository.save(reserva);
     }
 

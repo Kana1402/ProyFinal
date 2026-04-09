@@ -27,17 +27,23 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
+   public String generateToken(UserDetails userDetails) {
+    Date now = new Date();
+    Date expiryDate = new Date(now.getTime() + expiration);
 
-        return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(getSigningKey(), Jwts.SIG.HS256)
-                .compact();
-    }
+    String role = userDetails.getAuthorities().stream()
+            .findFirst()
+            .map(a -> a.getAuthority().replace("ROLE_", ""))
+            .orElse("USUARIO");
+
+    return Jwts.builder()
+            .subject(userDetails.getUsername())
+            .claim("role", role)
+            .issuedAt(now)
+            .expiration(expiryDate)
+            .signWith(getSigningKey(), Jwts.SIG.HS256)
+            .compact();
+}
 
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();
