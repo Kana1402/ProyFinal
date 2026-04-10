@@ -28,7 +28,7 @@ public class DataLoader {
 
             if (usuarioRepository.findByUsername("usuario1").isEmpty()) {
                 Usuario usuario = new Usuario(
-                        "usuario1",
+                        "usuario11",
                         passwordEncoder.encode("user123"),
                         Role.USUARIO
                 );

@@ -3,7 +3,7 @@
 ### ==========================================================
 
 @base = http://localhost:8080
-@tokenAdmin = Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3NTYyNDc4OSwiZXhwIjoxNzc1NjI4Mzg5fQ.mUKm0daqKW4R6WIc-hGy9VQncS4nUdKujHL6KLEG4QA
+@tokenAdmin = Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTklTVFJBRE9SIiwiaWF0IjoxNzc1Nzg5OTg1LCJleHAiOjE3NzU3OTM1ODV9.PaOoMzuJ_wC-URLSRsiIrB0RG5j_IVEbcg_Of1tGh_U
 @tokenUsuario = Bearer PEGA_AQUI_TOKEN_USUARIO
 
 

@@ -27,7 +27,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-   public String generateToken(UserDetails userDetails) {
+ public String generateToken(UserDetails userDetails, Long userId) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + expiration);
 
@@ -39,6 +39,7 @@ public class JwtUtil {
     return Jwts.builder()
             .subject(userDetails.getUsername())
             .claim("role", role)
+            .claim("userId", userId)   // ← nuevo
             .issuedAt(now)
             .expiration(expiryDate)
             .signWith(getSigningKey(), Jwts.SIG.HS256)

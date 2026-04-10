@@ -38,24 +38,27 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
-                            request.getPassword()));
+   @PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    try {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(), request.getPassword()
+                )
+        );
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        
+        // Obtener el id real del usuario
+        Usuario usuario = usuarioRepository.findByUsername(request.getUsername())
+                .orElseThrow();
+        
+        String token = jwtUtil.generateToken(userDetails, usuario.getId());
+        return ResponseEntity.ok(new AuthResponse(token));
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-            String token = jwtUtil.generateToken(userDetails);
-
-            return ResponseEntity.ok(new AuthResponse(token));
-
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Credenciales inválidas");
-        }
+    } catch (BadCredentialsException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
     }
+}
 
     @PostMapping("/registro")
     public ResponseEntity<?> registro(@RequestBody RegistroRequest request) {
