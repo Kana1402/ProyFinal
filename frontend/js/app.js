@@ -247,7 +247,8 @@ async function loadNoticiasHome() {
         return;
     }
 
-    const noticiasRecientes = res.data.slice(0, 3);
+    const noticiasOrdenadas = res.data.sort((a, b) => new Date(b.fechaPublicacion) - new Date(a.fechaPublicacion));
+    const noticiasRecientes = noticiasOrdenadas.slice(0, 3);
 
     el.innerHTML = noticiasRecientes.length ? noticiasRecientes.map(n => {
         const img = n.imagenUrl?.startsWith('http') ? n.imagenUrl : IMG_NOTICIA;
@@ -574,8 +575,11 @@ async function loadNoticias() {
     el.innerHTML = '<div class="loading"><span class="spinner"></span>Cargando noticias...</div>';
     const res = await api('GET', '/api/noticias');
     if (!res.ok) { el.innerHTML = '<div class="empty">Error al cargar noticias.</div>'; return; }
+    
+    const noticiasOrdenadas = res.data.sort((a, b) => new Date(b.fechaPublicacion) - new Date(a.fechaPublicacion));
+    
     const isAdmin = currentUser?.role === 'ADMINISTRADOR';
-    el.innerHTML = res.data.length ? res.data.map(n => {
+    el.innerHTML = noticiasOrdenadas.length ? noticiasOrdenadas.map(n => {
         const img = n.imagenUrl?.startsWith('http') ? n.imagenUrl : IMG_NOTICIA;
         const fecha = formatFecha(n.fechaPublicacion).split(',')[0];
         const autor = n.autor?.username || 'Asociación';

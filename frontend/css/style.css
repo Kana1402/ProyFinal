@@ -102,8 +102,8 @@ nav {
 .hero {
     height: 62vh;
     min-height: 420px;
-    background: linear-gradient(rgba(0, 78, 137, 0.45), rgba(0, 53, 92, 0.75)),
-        url('https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1920&auto=format&fit=crop') center/cover;
+    background: linear-gradient(rgba(5, 69, 1, 0.34), rgba(0, 53, 92, 0.75)),
+        url('../images/imagen\ Cahuita.jpg') center/cover;
     display: flex;
     flex-direction: column;
     justify-content: center;
