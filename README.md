@@ -42,20 +42,12 @@ ProyFinal/
 │       ├── services/            # Lógica de negocio
 │       └── security/            # JWT, filtros y configuración
 └── frontend/
-    ├── index.html               # SPA principal
-    ├── style.css                # Estilos globales
+    ├── html/
+    │   └── index.html           # SPA principal
+    ├── css/              
+    │   └── style.css            # Estilos globales
     └── js/
-        ├── main.js              # Punto de entrada (ES Modules)
-        ├── state.js             # Estado global compartido
-        ├── api.js               # Cliente HTTP centralizado
-        ├── auth.js              # Autenticación y sesión
-        ├── nav.js               # Navegación y modales
-        ├── servicios.js         # Módulo de servicios
-        ├── noticias.js          # Módulo de noticias
-        ├── directiva.js         # Módulo de directiva
-        ├── reservas.js          # Módulo de reservas
-        ├── dashboard.js         # Dashboard administrativo
-        └── helpers.js           # Utilidades compartidas
+        └── app.js               # Script Principal
 ```
 
 ---
