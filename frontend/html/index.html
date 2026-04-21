@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asoc. Pescadores Cahuita</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <div id="alert-area"></div>
+    <div id="token-debug"></div>
+
+    <nav>
+        <span class="nav-brand">🐠 Asoc. Cahuita</span>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="goTo('inicio')">Inicio</button>
+            <button class="nav-btn" onclick="goTo('servicios')">Servicios</button>
+            <button class="nav-btn" onclick="goTo('noticias')">Noticias</button>
+            <button class="nav-btn" onclick="goTo('directiva')">Directiva</button>
+            <button class="nav-btn" id="btn-reservas" style="display:none" onclick="goTo('reservas')">Mis
+                reservas</button>
+            <button class="nav-btn" id="btn-dashboard" style="display:none"
+                onclick="goTo('dashboard')">Dashboard</button>
+        </div>
+        <div class="nav-actions">
+            <div id="user-info" style="display:none"></div>
+            <div id="auth-buttons">
+                <button class="btn" onclick="openModal('login-modal')" style="margin-right:6px">Ingresar</button>
+                <button class="btn btn-primary" onclick="openModal('registro-modal')">Registrarse</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content">
+
+        <!-- INICIO -->
+        <div class="page active" id="page-inicio">
+            <div class="hero">
+                <h1>Cahuita en tus manos</h1>
+                <p>Tradición pesquera, aventura segura. Reserva tu experiencia en el Parque Nacional Cahuita.</p>
+                <button class="btn-white" onclick="goTo('servicios')">Ver servicios disponibles</button>
+            </div>
+            <div class="section-title" style="margin-bottom:1.5rem">Últimas noticias</div>
+            <div id="noticias-home">
+                <div class="loading"><span class="spinner"></span>Cargando...</div>
+            </div>
+        </div>
+
+
+        <!-- SERVICIOS -->
+        <div class="page" id="page-servicios">
+            <div class="section-header">
+                <div class="section-title">Servicios</div>
+                <button class="btn btn-primary" id="btn-nuevo-servicio" style="display:none"
+                    onclick="abrirModalServicio()">+ Nuevo servicio</button>
+            </div>
+            <div class="serv-grid" id="servicios-grid">
+                <div class="loading"><span class="spinner"></span>Cargando experiencias...</div>
+            </div>
+            <div id="detalle-servicio" style="display:none">
+                <div class="section-header" style="margin-top:0">
+                    <div id="detalle-titulo" class="section-title" style="font-size:1.6rem"></div>
+                    <button class="btn btn-primary" id="btn-nueva-actividad" style="display:none"
+                        onclick="abrirModalActividad()">+ Nueva fecha</button>
+                </div>
+                <p id="detalle-desc"></p>
+                <div
+                    style="font-size:1rem;font-weight:700;color:var(--text-light);margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.5px">
+                    Fechas disponibles</div>
+                <div id="fechas-list"></div>
+            </div>
+        </div>
+
+        <!-- NOTICIAS -->
+        <div class="page" id="page-noticias">
+            <div class="section-header">
+                <div class="section-title">Noticias y avisos</div>
+                <button class="btn btn-primary" id="btn-nueva-noticia" style="display:none"
+                    onclick="abrirModalNoticia()">+ Nueva noticia</button>
+            </div>
+            <div id="noticias-list">
+                <div class="loading"><span class="spinner"></span>Cargando noticias...</div>
+            </div>
+        </div>
+
+        <!-- DIRECTIVA -->
+        <div class="page" id="page-directiva">
+            <div class="section-header">
+                <div class="section-title">Junta directiva</div>
+                <button class="btn btn-primary" id="btn-nuevo-miembro" style="display:none"
+                    onclick="abrirModalMiembro()">+ Nuevo miembro</button>
+            </div>
+            <div id="directiva-list">
+                <div class="loading"><span class="spinner"></span>Cargando directiva...</div>
+            </div>
+        </div>
+
+        <!-- MIS RESERVAS -->
+        <div class="page" id="page-reservas">
+            <div class="section-title" style="margin-bottom:1.5rem">Mis reservas</div>
+            <div id="mis-reservas-list">
+                <div class="loading"><span class="spinner"></span>Cargando...</div>
+            </div>
+            <div style="text-align:center;margin-top:1.5rem">
+                <button class="btn btn-primary" onclick="goTo('servicios')">Nueva reserva</button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div class="page" id="page-dashboard">
+            <div class="section-title" style="margin-bottom:1.5rem">Dashboard</div>
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metric-label">Reservas totales</div>
+                    <div class="metric-val" id="m-reservas">—</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Pendientes</div>
+                    <div class="metric-val" id="m-pendientes">—</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Usuarios</div>
+                    <div class="metric-val" id="m-usuarios">—</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Servicios</div>
+                    <div class="metric-val" id="m-servicios">—</div>
+                </div>
+            </div>
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('tab-reservas',this)">Reservas</button>
+                <button class="tab" onclick="switchTab('tab-usuarios',this)">Usuarios</button>
+            </div>
+            <div id="tab-reservas">
+                <div class="toolbar-container">
+
+                    <div class="filters-group">
+                        <select id="filtro-servicio" class="filter-select" onchange="filtrarTablaReservas()">
+                            <option value="TODOS">Todos los servicios</option>
+                        </select>
+                        <div><br></div>
+                        <select id="filtro-estado" class="filter-select" onchange="filtrarTablaReservas()">
+                            <option value="TODAS">Todos los estados</option>
+                            <option value="PENDIENTE">Pendientes</option>
+                            <option value="CONFIRMADA">Confirmadas</option>
+                        </select>
+                        <div><br></div>
+                    </div>
+
+                    <button class="btn btn-primary btn-excel" onclick="descargarExcelReservas()">Descargar Excel
+                        📊</button>
+                    <div><br></div>
+                </div>
+
+                <div id="admin-reservas">
+                    <div class="loading"><span class="spinner"></span>Cargando...</div>
+                </div>
+            </div>
+            <div id="tab-usuarios" style="display:none">
+                <div id="admin-usuarios">
+                    <div class="loading"><span class="spinner"></span>Cargando...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ MODALES ═══════════ -->
+
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal">
+            <div class="modal-title">Ingresar</div>
+            <div class="form-group"><label class="form-label">Usuario</label><input type="text" id="login-user"
+                    placeholder="username" /></div>
+            <div class="form-group"><label class="form-label">Contraseña</label><input type="password" id="login-pass"
+                    placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" /></div>
+            <div class="form-row"><button class="btn" onclick="closeModal('login-modal')">Cancelar</button><button
+                    class="btn btn-primary" onclick="doLogin()">Ingresar</button><button class="btn btn-primary"
+                    onclick="openModal('registro-modal')">Registrar</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="registro-modal">
+        <div class="modal">
+            <div class="modal-title">Crear cuenta</div>
+            <div class="form-group"><label class="form-label">Usuario</label><input type="text" id="reg-user"
+                    placeholder="username" /></div>
+            <div class="form-group"><label class="form-label">Correo</label><input type="email" id="reg-email"
+                    placeholder="correo@ejemplo.com" /></div>
+            <div class="form-group"><label class="form-label">Teléfono (opcional)</label><input type="text" id="reg-tel"
+                    placeholder="8888-1234" /></div>
+            <div class="form-group"><label class="form-label">Contraseña</label><input type="password" id="reg-pass"
+                    placeholder="••••••••" /></div>
+            <div class="form-row"><button class="btn" onclick="closeModal('registro-modal')">Cancelar</button><button
+                    class="btn btn-primary" onclick="doRegistro()">Registrarse</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="reserva-modal">
+        <div class="modal">
+            <div class="modal-title">Reservar actividad</div>
+            <div class="form-group"><label class="form-label">Servicio</label><input type="text" id="res-servicio"
+                    readonly /></div>
+            <div class="form-group"><label class="form-label">Fecha</label><input type="text" id="res-fecha" readonly />
+            </div>
+            <input type="hidden" id="res-actividad-id" />
+            <div class="form-group"><label class="form-label">Cantidad de personas</label><input type="number"
+                    id="res-personas" min="1" max="10" value="1" /></div>
+            <div class="form-group"><label class="form-label">Notas (opcional)</label><textarea id="res-notas" rows="2"
+                    placeholder="Alguna indicación especial..."></textarea></div>
+            <div class="form-row"><button class="btn" onclick="closeModal('reserva-modal')">Cancelar</button><button
+                    class="btn btn-primary" onclick="doReserva()">Confirmar reserva</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="servicio-modal">
+        <div class="modal">
+            <div class="modal-title" id="servicio-modal-title">Nuevo servicio</div>
+            <input type="hidden" id="serv-id" />
+            <div class="form-group"><label class="form-label">Título</label><input type="text" id="serv-titulo"
+                    placeholder="Nombre del servicio" /></div>
+            <div class="form-group"><label class="form-label">Descripción</label><textarea id="serv-desc" rows="3"
+                    placeholder="Descripción del servicio..."></textarea></div>
+            <div class="form-group"><label class="form-label">Precio (₡)</label><input type="number" id="serv-precio"
+                    placeholder="35000" /></div>
+            <div class="form-group"><label class="form-label">URL de imagen (opcional)</label><input type="text"
+                    id="serv-imagen" placeholder="https://..." /></div>
+            <div class="form-row"><button class="btn" onclick="closeModal('servicio-modal')">Cancelar</button><button
+                    class="btn btn-primary" onclick="guardarServicio()">Guardar</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="actividad-modal">
+        <div class="modal">
+            <div class="modal-title" id="actividad-modal-title">Nueva fecha</div>
+            <input type="hidden" id="act-id" />
+            <input type="hidden" id="act-servicio-id" />
+            <div class="form-group"><label class="form-label">Fecha y hora</label><input type="datetime-local"
+                    id="act-fecha" /></div>
+            <div class="form-group"><label class="form-label">Cupo máximo</label><input type="number" id="act-cupo"
+                    placeholder="10" min="1" /></div>
+            <div class="form-group" id="act-estado-group" style="display:none">
+                <label class="form-label">Estado</label>
+                <select id="act-estado">
+                    <option value="PROGRAMADA">Programada</option>
+                    <option value="CANCELADA">Cancelada</option>
+                    <option value="COMPLETA">Completa</option>
+                </select>
+            </div>
+            <div class="form-row"><button class="btn" onclick="closeModal('actividad-modal')">Cancelar</button><button
+                    class="btn btn-primary" onclick="guardarActividad()">Guardar</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="noticia-modal">
+        <div class="modal">
+            <div class="modal-title" id="noticia-modal-title">Nueva noticia</div>
+            <input type="hidden" id="not-id" />
+            <div class="form-group"><label class="form-label">Título</label><input type="text" id="not-titulo"
+                    placeholder="Título de la noticia" /></div>
+            <div class="form-group"><label class="form-label">Contenido</label><textarea id="not-contenido" rows="5"
+                    placeholder="Escribe el contenido..."></textarea></div>
+            <div class="form-group"><label class="form-label">URL de imagen (opcional)</label><input type="text"
+                    id="not-imagen" placeholder="https://..." /></div>
+            <div class="form-row"><button class="btn" onclick="closeModal('noticia-modal')">Cancelar</button><button
+                    class="btn btn-primary" onclick="guardarNoticia()">Guardar</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="miembro-modal">
+        <div class="modal">
+            <div class="modal-title" id="miembro-modal-title">Nuevo miembro</div>
+            <input type="hidden" id="miem-id" />
+            <div class="form-group"><label class="form-label">Nombre completo</label><input type="text" id="miem-nombre"
+                    placeholder="Nombre apellido" /></div>
+            <div class="form-group"><label class="form-label">Puesto</label><input type="text" id="miem-puesto"
+                    placeholder="Presidente, Tesorero..." /></div>
+            <div class="form-group"><label class="form-label">Biografía (opcional)</label><textarea id="miem-bio"
+                    rows="3" placeholder="Breve descripción..."></textarea></div>
+            <div class="form-group"><label class="form-label">URL de foto (opcional)</label><input type="text"
+                    id="miem-foto" placeholder="https://..." /></div>
+            <div class="form-group"><label class="form-label">Orden de prioridad</label><input type="number"
+                    id="miem-orden" placeholder="1" min="1" /></div>
+            <div class="form-row"><button class="btn" onclick="closeModal('miembro-modal')">Cancelar</button><button
+                    class="btn btn-primary" onclick="guardarMiembro()">Guardar</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirm-modal">
+        <div class="modal" style="max-width:380px">
+            <div class="modal-title">Confirmar acción</div>
+            <p style="font-size:0.95rem;color:#555;margin-bottom:1.25rem;line-height:1.6" id="confirm-msg"></p>
+            <div class="form-row"><button class="btn" onclick="closeModal('confirm-modal')">Cancelar</button><button
+                    class="btn btn-danger" onclick="ejecutarEliminar()">Eliminar</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="noticia-lectura-modal">
+        <div class="modal" style="max-width:800px">
+            <div id="noticia-lectura-contenido"></div>
+            <div class="modal-footer-fixed">
+                <button class="btn btn-primary" onclick="closeModal('noticia-lectura-modal')">Cerrar lectura</button>
+            </div>
+        </div>
+    </div>
+    <a href="javascript:void(0)" id="whatsapp-float" class="whatsapp-btn-circular" target="_blank"
+        rel="noopener noreferrer">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="whatsapp-img">
+    </a>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-brand">🐠 Asoc. Pescadores Cahuita</div>
+                <p>Promoviendo la pesca responsable y el turismo sostenible en el corazón del Caribe Sur de Costa Rica
+                    desde hace décadas.</p>
+            </div>
+
+
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <ul>
+                    <li>📍 Cahuita, Limón, Costa Rica</li>
+                    <li>📞 +506 8888-1234</li>
+                    <li>✉️ info@asoccahuita.cr</li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#" title="Facebook">FB</a>
+                    <a href="#" title="Instagram">IG</a>
+                    <a href="#" title="WhatsApp">WA</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2024 Asociación de Pescadores de Cahuita. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <script src="../js/app.js"></script>
+
+</body>
+
+</html>
