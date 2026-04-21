@@ -1,8 +1,13 @@
 package asoc.api.services;
 
+import asoc.api.entity.Noticia;
+import asoc.api.entity.Reserva;
 import asoc.api.entity.Usuario;
+import asoc.api.repository.NoticiaRepository;
+import asoc.api.repository.ReservaRepository;
 import asoc.api.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,9 +15,13 @@ import java.util.Optional;
 public class UsuarioService { 
 
     private final UsuarioRepository usuarioRepository;
+    private final ReservaRepository reservaRepository;
+    private final NoticiaRepository noticiaRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, ReservaRepository reservaRepository, NoticiaRepository noticiaRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.reservaRepository = reservaRepository;
+        this.noticiaRepository = noticiaRepository;
     }
 
     public List<Usuario> listarTodos() {
@@ -33,8 +42,21 @@ public class UsuarioService {
         });
     }
 
+    @Transactional
     public boolean eliminar(Long id) {
         if (usuarioRepository.existsById(id)) {
+            // 1. Desvincular autor de las noticias
+            List<Noticia> noticias = noticiaRepository.findByAutorId(id);
+            for (Noticia noticia : noticias) {
+                noticia.setAutor(null);
+                noticiaRepository.save(noticia);
+            }
+            
+            // 2. Eliminar reservas asociadas al usuario
+            List<Reserva> reservas = reservaRepository.findByUsuarioId(id);
+            reservaRepository.deleteAll(reservas);
+            
+            // 3. Eliminar el usuario
             usuarioRepository.deleteById(id);
             return true;
         }

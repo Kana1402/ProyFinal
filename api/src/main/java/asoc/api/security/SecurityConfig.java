@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/reservas/**").authenticated()
                         // Gestión de usuarios: solo ADMINISTRADOR
                         .requestMatchers("/api/usuarios/**").hasRole("ADMINISTRADOR")
+                        // Permitir la ruta de error por defecto de Spring Boot para evitar 403 en excepciones
+                        .requestMatchers("/error").permitAll()
                         // Cualquier otra ruta requiere autenticación
                         .anyRequest().authenticated()
                 )

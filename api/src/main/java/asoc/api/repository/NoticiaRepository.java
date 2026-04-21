@@ -7,4 +7,6 @@ import java.util.List;
 public interface NoticiaRepository extends JpaRepository<Noticia, Long> {
     // Traer las últimas noticias primero
     List<Noticia> findAllByOrderByFechaPublicacionDesc();
+    
+    List<Noticia> findByAutorId(Long autorId);
 }
