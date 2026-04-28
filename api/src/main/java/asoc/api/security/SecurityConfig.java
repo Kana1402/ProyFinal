@@ -33,6 +33,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
 
+                        // Permitir acceso a la raíz y recursos estáticos
+                        .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/img/**", "/favicon.ico").permitAll()
                         // Autenticación: público total
                         .requestMatchers("/api/auth/**").permitAll()
                         // Contenido público (VISITANTE puede leer sin token)

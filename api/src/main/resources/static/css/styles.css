@@ -103,7 +103,7 @@ nav {
     height: 62vh;
     min-height: 420px;
     background: linear-gradient(rgba(5, 69, 1, 0.34), rgba(0, 53, 92, 0.75)),
-        url('../images/imagen\ Cahuita.jpg') center/cover;
+        url('../img/imagen_cahuita.jpg') center/cover;
     display: flex;
     flex-direction: column;
     justify-content: center;

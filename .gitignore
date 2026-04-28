@@ -1,0 +1,28 @@
+# Seguridad y Configuración Local
+.env
+.env.bak
+.env.example
+
+# Maven (Archivos de compilación)
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDEs (Visual Studio Code, IntelliJ, Eclipse)
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.settings/
+.classpath
+.project
+.factorypath
+bin/
+
+# Logs y Archivos temporales
+*.log
+tmp/
+
+# Docker y OS
+.DS_Store
+Thumbs.db
