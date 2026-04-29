@@ -4,10 +4,10 @@ services:
     container_name: mysql-db
     restart: always
     environment:
-      MYSQL_DATABASE: ${DB_NAME:-BaseProy}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
-      MYSQL_USER: ${DB_USER:-user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-userpassword}
+      MYSQL_DATABASE: BaseProy
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
     ports:
       - "3307:3306"
     volumes:
@@ -22,10 +22,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME:-BaseProy}?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/BaseProy?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
-      JWT_SECRET: ${JWT_SECRET:-EstaEsUnaClaveMuyLargaYSeguraParaMiApiDeSodas2026}
+      SPRING_DATASOURCE_PASSWORD: rootpassword
+      JWT_SECRET: ${JWT_SECRET:-VGhpcy1Jcy1BLVZlcnktU2VjdXJlLVNlY3JldC1LZXktRm9yLUpXVC0yMDI2}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-3600000}
       ADMIN_USER: ${ADMIN_USER:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
