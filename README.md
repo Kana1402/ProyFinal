@@ -1,194 +1,112 @@
-# Asoc. Pescadores Cahuita — Plataforma Digital
+# 🐠 Asoc. Pescadores Cahuita — Plataforma Digital
 
-Plataforma web integral para la **Asociación de Pescadores de Subsistencia y Acuicultura de Cahuita**, que facilita la promoción de sus servicios turísticos y pesqueros, la gestión de reservas y la comunicación con la comunidad y visitantes.
+[![Java](https://img.shields.io/badge/Java-17-orange?style=flat-square&logo=java)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2-brightgreen?style=flat-square&logo=spring-boot)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=flat-square&logo=mysql)](https://www.mysql.com/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-blue?style=flat-square&logo=docker)](https://www.docker.com/)
+
+Plataforma web integral para la **Asociación de Pescadores de Subsistencia y Acuicultura de Cahuita**, diseñada para modernizar la gestión de servicios turísticos, reservas y comunicación comunitaria en el Caribe Sur de Costa Rica.
 
 > *"Cahuita en tus manos: Tradición pesquera, aventura segura."*
 
 ---
 
-## Descripción
+## 🚀 Características Principales
 
-Este proyecto es una aplicación web full-stack desarrollada como solución digital para la asociación. Permite a los visitantes explorar servicios turísticos, hacer reservas en línea y leer noticias de la zona, mientras que los administradores gestionan todo el contenido desde un dashboard privado.
+- **Gestión de Servicios**: Catálogo dinámico de tours y actividades con imágenes y precios.
+- **Motor de Reservas**: Sistema inteligente con control de cupos en tiempo real y validaciones de disponibilidad.
+- **Seguridad Robusta**: Autenticación basada en **JWT (JSON Web Tokens)** con roles diferenciados.
+- **Dashboard Administrativo**: Panel de control completo para CRUD de servicios, noticias, directiva y usuarios.
+- **Reportes Avanzados**: Exportación de datos de reservas a formato **Excel (XLSX)** con filtros aplicados.
+- **Noticias y Avisos**: Módulo de comunicación para eventos y avisos importantes de la asociación.
+- **Diseño Premium**: Interfaz moderna, responsive y con efectos de *glassmorphism* para una experiencia de usuario fluida.
 
 ---
 
-## Tecnologías utilizadas
+## 🛠️ Tecnologías Utilizadas
 
-### Backend
+### Backend (API REST)
 - **Java 17** con **Spring Boot 3**
-- **Spring Security** con autenticación **JWT**
+- **Spring Security** + **JWT** para protección de rutas
 - **Spring Data JPA** con **Hibernate**
-- **MySQL** como base de datos
-- **Lombok** para reducción de código boilerplate
-- **Maven** como gestor de dependencias
+- **MySQL 8.0** como motor de persistencia
+- **Lombok** para código limpio y mantenible
 
-### Frontend
-- **HTML5 + CSS3 + JavaScript vanilla** (ES Modules)
-- Arquitectura **SPA** (Single Page Application)
-- **SheetJS (XLSX)** para exportación de reportes en Excel
+### Frontend (SPA)
+- **HTML5, CSS3 (Vanilla)** y **JavaScript (ES6+)**
+- **Thymeleaf** como motor de plantillas (servidor de entrada)
+- **SheetJS** para la generación de reportes Excel
+- **Arquitectura SPA** para navegación sin recargas
+
+### Despliegue y DevOps
+- **Docker** & **Docker Compose** para orquestación de contenedores
+- **Maven** para gestión de dependencias y construcción
 
 ---
 
-## Arquitectura del proyecto
+## 📂 Estructura del Proyecto
 
-```
+```text
 ProyFinal/
-├── api/
-│   └── src/main/java/asoc/api/
-│       ├── controller/          # Controladores REST
-│       ├── entity/              # Entidades JPA
-│       ├── dto/                 # Data Transfer Objects
-│       ├── repository/          # Repositorios Spring Data
-│       ├── services/            # Lógica de negocio
-│       └── security/            # JWT, filtros y configuración
-└── frontend/
-    ├── html/
-    │   └── index.html           # SPA principal
-    ├── css/              
-    │   └── style.css            # Estilos globales
-    └── js/
-        └── app.js               # Script Principal
+├── api/                     # Código fuente del Backend (Spring Boot)
+│   ├── src/main/java/       # Lógica en Java (Controllers, Services, Entities)
+│   └── src/main/resources/
+│       ├── static/          # Archivos estáticos (CSS, JS, Imágenes)
+│       └── templates/       # Plantillas Thymeleaf (index.html)
+├── docker-compose.yml       # Orquestación de contenedores (App + DB)
+├── Dockerfile               # Configuración de imagen Docker para la API
+├── .env                     # Variables de entorno (Configuración sensible)
+└── README.md                # Documentación del proyecto
 ```
 
 ---
 
-## Módulos del sistema
+## ⚙️ Instalación y Configuración
 
-| Módulo | Descripción |
+### Opción A: Despliegue Rápido con Docker (Recomendado) 🐳
+
+1. **Requisitos**: Tener instalado [Docker](https://www.docker.com/) y Docker Compose.
+2. **Configurar variables**: Crea o edita el archivo `.env` en la raíz con tus credenciales (puedes usar `.env.bak` como referencia).
+3. **Levantar servicios**:
+   ```bash
+   docker-compose up --build -d
+   ```
+4. **Acceso**: La aplicación estará disponible en `http://localhost:8080`.
+
+### Opción B: Ejecución Local (Desarrollo) 💻
+
+1. **Base de Datos**: Crea una base de datos en MySQL llamada `BaseProy`.
+2. **Configurar `application.properties`**: Asegúrate de que las variables de entorno coincidan con tu configuración local o define los valores directamente.
+3. **Compilar y Ejecutar**:
+   ```bash
+   cd api
+   mvn clean install
+   mvn spring-boot:run
+   ```
+
+---
+
+## 🔑 Roles y Acceso
+
+| Rol | Capacidades |
 |---|---|
-| **Inicio** | Hero con imagen, últimas noticias destacadas |
-| **Servicios** | Catálogo de tours y actividades con galería |
-| **Agenda** | Fechas programadas por servicio con control de cupos |
-| **Reservas** | Motor de reservas con validación de disponibilidad |
-| **Noticias** | Publicación y lectura de avisos y eventos |
-| **Directiva** | Presentación de los miembros de la junta |
-| **Dashboard** | Panel admin con métricas, filtros y exportación Excel |
-| **Seguridad** | Login/Registro con JWT y control de roles |
+| **VISITANTE** | Explorar servicios, leer noticias y ver la directiva. |
+| **USUARIO** | Todo lo anterior + realizar reservas y gestionar su historial. |
+| **ADMIN** | Control total: Dashboard, CRUD de todos los módulos, gestión de roles y reportes. |
+
+### Credenciales por Defecto (DataLoader)
+- **Admin**: `admin` / `admin123`
+- **Usuario**: `usuario1` / `user123`
 
 ---
 
-## Roles del sistema
+## 📜 Licencia
 
-| Rol | Permisos |
-|---|---|
-| **VISITANTE** | Ver servicios, noticias y directiva sin cuenta |
-| **USUARIO** | Todo lo anterior + realizar y ver sus reservas |
-| **ADMINISTRADOR** | Acceso total al Dashboard, CRUD de todos los módulos, gestión de usuarios y roles |
+Desarrollado para el **Proyecto Final de Carrera**. Todos los derechos reservados a la Asociación de Pescadores de Cahuita y los autores.
 
 ---
 
-## Endpoints principales
+## 👤 Autor
 
-### Autenticación
-```
-POST /api/auth/login
-POST /api/auth/registro
-```
-
-### Servicios (público GET / admin CRUD)
-```
-GET    /api/servicios
-POST   /api/servicios
-PUT    /api/servicios/{id}
-DELETE /api/servicios/{id}
-```
-
-### Actividades
-```
-GET    /api/actividades/servicio/{servicioId}
-POST   /api/actividades
-PUT    /api/actividades/{id}
-DELETE /api/actividades/{id}
-```
-
-### Reservas
-```
-POST   /api/reservas
-GET    /api/reservas
-GET    /api/reservas/mis-reservas/{usuarioId}
-PATCH  /api/reservas/{id}/estado?estado=
-```
-
-### Usuarios
-```
-GET    /api/usuarios
-DELETE /api/usuarios/{id}
-PATCH  /api/usuarios/{id}/rol?role=
-```
-
----
-
-## Instalación y configuración
-
-### Requisitos previos
-- Java 17+
-- Maven 3.8+
-- MySQL 8+
-- Navegador moderno (Chrome, Firefox, Edge)
-
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/tu-usuario/asoc-cahuita.git
-cd asoc-cahuita
-```
-
-### 2. Configurar la base de datos
-Crear una base de datos MySQL:
-```sql
-CREATE DATABASE asoc_cahuita;
-```
-
-### 3. Configurar `application.properties`
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/asoc_cahuita
-spring.datasource.username=tu_usuario
-spring.datasource.password=tu_contraseña
-spring.jpa.hibernate.ddl-auto=update
-
-jwt.secret=tu_clave_secreta_en_base64
-jwt.expiration=3600000
-```
-
-### 4. Ejecutar el backend
-```bash
-cd api
-mvn spring-boot:run
-```
-
-El servidor arranca en `http://localhost:8080`.
-
-### 5. Ejecutar el frontend
-Abre `index.html` con **Live Server** en VS Code o cualquier servidor estático. No abrir como `file://` ya que ES Modules requieren un servidor HTTP.
-
-### 6. Usuarios por defecto (DataLoader)
-| Usuario | Contraseña | Rol |
-|---|---|---|
-| `admin` | `admin123` | ADMINISTRADOR |
-| `usuario1` | `user123` | USUARIO |
-
----
-
-## Funcionalidades destacadas
-
-- ✅ Autenticación JWT con persistencia de sesión en `localStorage`
-- ✅ Control de cupos en tiempo real al hacer reservas
-- ✅ Validación para evitar que un usuario reserve la misma actividad dos veces
-- ✅ Las actividades pasadas se marcan automáticamente como caducadas
-- ✅ Exportación de reservas a Excel con filtros aplicados
-- ✅ Filtro de reservas por servicio y estado en el Dashboard
-- ✅ Cambio de roles de usuarios desde el Dashboard
-- ✅ Botón flotante de WhatsApp para contacto directo
-- ✅ Diseño responsive para móvil y escritorio
-
----
-
-## Licencia
-
-Este proyecto fue desarrollado con fines académicos, Costa Rica.
-
----
-
-## Autor
-
-Desarrollado por **Keinth** — Proyecto Final   
-Costa Rica, 2026
+**Keinth** — Desarrollador Full Stack  
+📍 Costa Rica, 2026
